@@ -1,131 +1,73 @@
 import java.util.*;
 
 public class Deck {
+    public static  HashMap<String,String> palos = new HashMap<String,String>();
 
-    private HashMap<String,String> palos = new HashMap<String, String>();
     private ArrayList<Card> juego = new ArrayList<Card>();
-    private String strFormat = "Quedan %s";
 
     Deck(){
+        palos.put("Diamante","Rojo");
+        palos.put("Corazón","Rojo");
+        palos.put("Trébol","Negro");
+        palos.put("Pica","Negro");
 
+        init();
     }
 
     public ArrayList<Card> getJuego() {
         return juego;
     }
 
-    public void initPalos(){
-        palos.put("Diamante","Rojo");
-        palos.put("Trebol","Negro");
-        palos.put("Pica","Negro");
-        palos.put("Corazon","Rojo");
-    }
-
     public void init(){
-        for (Map.Entry<String,String> palo:palos.entrySet()){
+        if (juego.size() > 1) juego.clear();
+
+        for (Map.Entry<String,String> palo : palos.entrySet()){
+            var paloCard = palo.getKey();
+            var color = palo.getValue();
+            Card card;
             for (int i=1;i <= 13;i++){
-                Card card = new Card(palo.getKey(), palo.getValue());
-                card.setValor(i);
+                card = new Card(paloCard, color, i);
                 juego.add(card);
             }
         }
     }
 
-    public void shuffle(){
-        Collections.shuffle(juego);
-        System.out.println("Se mezcló el Deck");
+    public void shuffle(){ Collections.shuffle(juego); }
+
+    public Card head()throws Exception{
+        if(juego.isEmpty() || juego.size() < 1)
+            throw new Exception("Ya no quedan cartas");
+
+        return juego.remove(juego.size()-1);
     }
 
-    public void head(){
+    public Card pick()throws Exception{
+        if(juego.isEmpty())
+            throw new Exception("Ya no quedan cartas");
 
-        var card = juego.get(juego.size()-1);
-        juego.remove(card);
-        System.out.println(card.toString());
-        System.out.println(String.format(strFormat,juego.size()));
-
+        return juego.remove(randomCard());
     }
 
-    public void pick(){
+    public ArrayList<Card> hand() throws Exception{
+        var cards = new ArrayList<Card>();
 
-        var card = randomCard();
-        juego.remove(card);
-        System.out.println(card.toString());
-        System.out.println(String.format(strFormat,juego.size()));
-
-    }
-
-    public void hand(){
-        if(juego.size() <= 5){
-            for (var card:juego){
-                printHand(juego);
-            }
-        }else {
-            var cards = new ArrayList<Card>();
-            Card card;
-            for (int i=1;i<=5;i++){
-                card = randomCard();
-                juego.remove(card);
-                cards.add(card);
-            }
-            printHand(cards);
-            System.out.println(String.format(strFormat,juego.size()));
+        if(juego.isEmpty()){
+            throw new Exception("Ya no quedan cartas");
         }
-    }
-
-    private void printHand(ArrayList<Card> cards){
-        for (var card: cards) System.out.println(card.toString());
-    }
-
-    private Card randomCard(){
-        //inicio - final - constante - el tamaño
-        var rnd = (int)Math.floor(Math.random()*(1-juego.size()+1)+juego.size());
-        return juego.get(rnd);
-    }
-
-    public void showMenu(){
-        Scanner leer = new Scanner(System.in);
-
-        int opcion;
-
-        do {
-            System.out.println("Bienvenido a Poker!\n" +
-                    "Selecciona una opción:\n" +
-                    "1 Mezclar deck\n" +
-                    "2 Sacar una carta\n" +
-                    "3 Carta al azar\n" +
-                    "4 Generar una mano de 5 cartas\n" +
-                    "0 Salir");
-            System.out.print("Introduce una opcion:");
-            opcion = leer.nextInt();
-
-            switch (opcion) {
-                // Mezclar deck//
-                case 1:
-                    shuffle();
-                    break;
-                //Sacar una carta//
-                case 2:
-                    head();
-                    break;
-                //Carta al azar//
-                case 3:
-                    pick();
-                    break;
-                //Generar una mano de 5 cartas//
-                case 4:
-                    hand();
-                    break;
-                //Salir//
-                case 0:
-                    System.out.println("Hasta la proxima");
-                    System.exit(0);
-                    break;
-                default:
-                    System.out.println("Opción no válida\n");
-                    break;
+        else if(juego.size() < 5){
+            throw new Exception("No hay suficientes cartas");
+        }
+        else {
+            for (int i=1;i<=5;i++){
+                cards.add(pick());
             }
-
-        } while (opcion != 0);
+        }
+        return cards;
     }
 
+    private int randomCard(){
+        var max = juego.size() -1;
+        var rnd = (int)Math.floor(Math.random()*(0-max+1)+max);
+        return rnd;
+    }
 }
