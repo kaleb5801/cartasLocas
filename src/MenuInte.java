@@ -46,14 +46,14 @@ public class MenuInte {
     private int limites() throws Exception{
         Scanner scn = new Scanner(System.in);
         var opcion = scn.nextInt();
-        if(opcion <0 || opcion >5 )
+        if(opcion < 0  || opcion > 5)
             throw new Exception("Introduce una opción Valida");
 
         return opcion;
     }
 
     private static void showDivision(){
-        System.out.println("-------------------------------");
+        System.out.println("-------------------------------" );
     }
 
     private void opciones(int opcion) throws Exception {
@@ -82,8 +82,9 @@ public class MenuInte {
                 diferenciador.reset();
                 vecesJugadas = 1;
                 break;
-            default:
-                jugar = false;
+            case 0:
+                System.out.println("¡Hasta la próxima!");
+                System.exit(0);
                 break;
         }
     }
